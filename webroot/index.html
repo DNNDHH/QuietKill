@@ -197,33 +197,33 @@
 </head>
 <body>
   <div class="container">
-    <h1>🤫🔪 Kill Control</h1>
+    <h1>🤫🔪 应用后台 杀手</h1>
 
     <div class="card">
-      <h3>Terminal Output</h3>
-      <div class="log-controls"><button onclick="clearOutput()">🧹 Clear Logs</button></div>
-      <div class="terminal" id="output"><span style="opacity:0.6;">No activity yet... Check Logs</span></div>
+      <h3>终端日志输出</h3>
+      <div class="log-controls"><button onclick="clearOutput()">🧹 清空日志</button></div>
+      <div class="terminal" id="output"><span style="opacity:0.6;">尚无活动...请点击 日志查看</span></div>
     </div>
 
     <div class="card">
-      <button class="btn" onclick="runScript()">Force Stop Apps</button>
-      <button class="btn" onclick="viewLog()">View Log</button>
+      <button class="btn" onclick="runScript()">手动终止后台应用</button>
+      <button class="btn" onclick="viewLog()">日志查看</button>
     </div>
 
     <div class="card">
-      <h3 onclick="toggleCard(this)">🌟 Ignore List<span>▶</span></h3>
+      <h3 onclick="toggleCard(this)">🌟 应用忽略列表<span>▶</span></h3>
       <div class="card-content" id="ignoreSection">
-        <input type="text" id="pkgInput" placeholder="e.g. com.whatsapp">
-        <button class="btn" onclick="addToIgnoreList()">Add to Ignore List</button>
+        <input type="text" id="pkgInput" placeholder="例如. com.whatsapp">
+        <button class="btn" onclick="addToIgnoreList()">添加到-忽略列表-保护它</button>
         <div class="list" id="ignoredListDisplay"></div>
       </div>
     </div>
 
     <div class="card">
-      <h3 onclick="toggleCard(this)">💀 System App Killer<span>▶</span></h3>
+      <h3 onclick="toggleCard(this)">💀 系统应用 杀手<span>▶</span></h3>
       <div class="card-content" id="killSection">
-        <input type="text" id="killPkgInput" placeholder="e.g. com.google.android.gms">
-        <button class="btn" onclick="addToKillList()">Add to Kill List</button>
+        <input type="text" id="killPkgInput" placeholder="例如. com.google.android.gms">
+        <button class="btn" onclick="addToKillList()">添加到-强制终止列表-杀死它</button>
         <div class="list" id="killListDisplay"></div>
       </div>
     </div>
@@ -253,15 +253,15 @@
     const appendOutput = text => {
       const line = document.createElement("div");
 
-      if (text.includes("📱 Killing user-installed apps")) {
+      if (text.includes("📱 杀死 用户已安装的应用程序 ")) {
         killCount = 0; skipCount = 0;
-        line.innerHTML = `<hr><strong style="color:#1a73e8;">📱 Killing User Apps</strong><hr>`;
-      } else if (text.includes("⚙️ Killing system apps from ForceKill.txt")) {
-        line.innerHTML = `<hr><strong style="color:#d93025;">⚙️ Killing System Apps</strong><hr>`;
-      } else if (text.includes("🎯 Done")) {
-        const summary = `<br><strong>✅ Killed: ${killCount} apps</strong><br><strong style="color:orange;">⚠️ Skipped: ${skipCount} apps</strong><br>`;
+        line.innerHTML = `<hr><strong style="color:#1a73e8;">📱 杀死 用户应用 后台</strong><hr>`;
+      } else if (text.includes("⚙️ 系统应用 - 强制终止列表 - ForceKill.txt")) {
+        line.innerHTML = `<hr><strong style="color:#d93025;">⚙️ 杀死 系统应用 后台</strong><hr>`;
+      } else if (text.includes("🎯 完成")) {
+        const summary = `<br><strong>✅ 已杀死: ${killCount} 应用</strong><br><strong style="color:orange;">⚠️ 跳过: ${skipCount} 应用</strong><br>`;
         line.innerHTML = summary + `<hr><strong style="color:#188038;">🎯 All Done</strong><hr>`;
-      } else if (text.includes("⚠️ [User] Skipped")) {
+      } else if (text.includes("⚠️ [User] 跳过")) {
         skipCount++;
         line.innerHTML = `<div style="color:orange;">${text}</div>`;
       } else if (text.includes("⏳")) {
@@ -280,18 +280,18 @@
     };
 
     const clearOutput = () => {
-      output.innerHTML = `<span style="opacity:0.6;">No activity yet...</span>`;
+      output.innerHTML = `<span style="opacity:0.6;">未激活...</span>`;
     };
 
     function runScript() {
-      toast(" Hey dude, listen, This action will force-stop all installed apps, as well as any system apps you've added to the force kill list. Only the apps you've added to the ignore list will remain unaffected.");
+      toast(" 嘿，兄弟，听着，此操作将强制停止所有已安装的应用程序后台服务，以及您添加到 系统应用 杀手 列表中的 任何系统应用程序。只有您添加到 应用忽略列表 的 应用程序 不会受到影响.");
       clearOutput();
-      appendOutput("⏳ Executing force-stop script...");
+      appendOutput("⏳ 正在执行 强制杀死应用脚本...");
       runShell("sh /data/adb/modules/QuiteKill/QuiteKill.sh", () => {
         runShell("cat /data/adb/modules/QuiteKill/webroot/output.log", (code, out) => {
           clearOutput();
           if (code === 0) out.split("\n").forEach(appendOutput);
-          else appendOutput("⛔ Output log not found.");
+          else appendOutput("⛔ 未找到输出日志.");
         });
       });
     }
@@ -300,13 +300,13 @@
       runShell("cat /data/adb/modules/QuiteKill/webroot/output.log", (code, out) => {
         clearOutput();
         if (code === 0) out.split("\n").forEach(appendOutput);
-        else toast("Log not found.");
+        else toast("未找到日志文件.");
       });
     }
 
     function addToList(filePath, inputId, displayList, removeFunc) {
       const pkg = document.getElementById(inputId).value.trim();
-      if (!pkg) return toast("Enter a package name");
+      if (!pkg) return toast("输入应用的包名");
       runShell(`grep -Fxq "${pkg}" ${filePath} || echo "${pkg}" >> ${filePath}`, () => {
         const div = document.createElement("div");
         div.className = "list-item";
@@ -344,7 +344,7 @@
             listDisplay.appendChild(div);
           });
         } else {
-          listDisplay.innerHTML = "<i>No ignored packages yet.</i>";
+          listDisplay.innerHTML = "<i>尚未设置忽略任何应用.</i>";
         }
       });
     }
@@ -360,7 +360,7 @@
             killListDisplay.appendChild(div);
           });
         } else {
-          killListDisplay.innerHTML = "<i>No apps set to kill manually.</i>";
+          killListDisplay.innerHTML = "<i>没有设置 手动终止的应用程序.</i>";
         }
       });
     }
